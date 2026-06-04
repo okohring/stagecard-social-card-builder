@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stagecard Social Card Creator
  * Description: Adds event-specific public social card creators and, when Stagecard is active, places them under the Programs admin menu.
- * Version: 0.6.2
+ * Version: 0.6.3
  * Author: Olivia Kohring
  * Text Domain: stagecard-social-card-builder
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Stagecard_Social_Card_Creator {
-    const VERSION = '0.6.2';
+    const VERSION = '0.6.3';
     const GITHUB_REPO = 'okohring/stagecard-social-card-builder';
     const MENU_SLUG = 'stagecard-social-card-builder';
     const OPTION_SETTINGS = 'stagecard_social_card_builder_settings';
@@ -248,7 +248,7 @@ final class Stagecard_Social_Card_Creator {
         wp_enqueue_script('stagecard-social-card-builder');
         ob_start(); ?>
         <div class="dhkc-card-builder" data-dhkc-card-builder data-template-url="<?php echo esc_url($template_url); ?>" data-download-file-name="<?php echo esc_attr($download_name); ?>">
-            <p class="dhkc-card-builder__note">Drag the image inside the transparent section, resize it above, then download the finished PNG.</p>
+            <p class="dhkc-card-builder__note">Use the tools below to resize and move your image, or drag inside the template area. Then download and share!</p>
             <div class="dhkc-card-builder__controls" aria-label="Photo adjustment controls"><div class="dhkc-card-builder__control-grid"><label class="dhkc-card-builder__upload"><span>Upload image</span><input class="dhkc-card-builder__file" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="dhkc-card-builder__range"><span>Image size</span><input class="dhkc-card-builder__zoom" type="range" min="0.25" max="4" step="0.01" value="1" disabled></label><label class="dhkc-card-builder__move"><span>Move image</span><span class="dhkc-card-builder__move-grid"><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--up" data-dhkc-move="up" disabled aria-label="Move image up">↑</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--left" data-dhkc-move="left" disabled aria-label="Move image left">←</button><span class="dhkc-card-builder__move-center" aria-hidden="true">✥</span><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--right" data-dhkc-move="right" disabled aria-label="Move image right">→</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--down" data-dhkc-move="down" disabled aria-label="Move image down">↓</button></span></label></div><div class="dhkc-card-builder__actions"><button type="button" class="dhkc-card-builder__button dhkc-card-builder__button--secondary" data-dhkc-reset disabled>Reset image</button><button type="button" class="dhkc-card-builder__button" data-dhkc-download disabled>Download PNG</button></div></div>
             <div class="dhkc-card-builder__editor" aria-label="Social card preview editor"><canvas class="dhkc-card-builder__canvas" width="1200" height="1200"></canvas></div>
         </div>
