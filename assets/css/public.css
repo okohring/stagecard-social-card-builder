@@ -9,6 +9,7 @@
     box-shadow: 0 10px 24px rgba(16, 24, 40, 0.06);
     color: #000000;
     font-family: Montserrat, sans-serif;
+    font-weight: 400;
 }
 
 .dhkc-card-builder *,
@@ -17,6 +18,7 @@
     box-sizing: inherit;
     color: #000000;
     font-family: Montserrat, sans-serif;
+    font-weight: 400;
 }
 
 .dhkc-card-builder__note {
@@ -24,14 +26,14 @@
     max-width: 620px;
     color: #000000;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 1.45;
     text-align: center;
 }
 
 .dhkc-card-builder__controls {
     display: grid;
-    gap: 16px;
+    gap: 12px;
     margin: 0 auto 18px;
     padding: 18px;
     border: 1px solid rgba(16, 24, 40, 0.10);
@@ -42,8 +44,8 @@
 .dhkc-card-builder__control-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 150px;
-    gap: 16px 22px;
-    align-items: end;
+    gap: 12px 22px;
+    align-items: start;
     width: 100%;
     max-width: 650px;
     margin: 0 auto;
@@ -51,6 +53,8 @@
 
 .dhkc-card-builder__upload {
     grid-column: 1 / -1;
+    align-items: center;
+    text-align: center;
 }
 
 .dhkc-card-builder__upload,
@@ -59,9 +63,17 @@
     display: grid;
     gap: 7px;
     margin: 0;
-    font-weight: 700;
+    font-weight: 400;
     color: #000000;
-    text-align: left;
+}
+
+.dhkc-card-builder__range {
+    align-self: center;
+}
+
+.dhkc-card-builder__move {
+    justify-self: center;
+    text-align: center;
 }
 
 .dhkc-card-builder__file,
@@ -70,12 +82,16 @@
 }
 
 .dhkc-card-builder__file {
+    display: block;
+    width: min(620px, 100%);
     min-height: 44px;
+    margin: 0 auto;
     padding: 9px 12px;
     border: 1px solid rgba(16, 24, 40, 0.18);
     border-radius: 10px;
     background: #ffffff;
     color: #000000;
+    text-align: center;
 }
 
 .dhkc-card-builder__zoom {
@@ -87,7 +103,7 @@
     grid-template-columns: repeat(3, 34px);
     grid-template-rows: repeat(3, 34px);
     gap: 5px;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
 }
 
@@ -103,7 +119,7 @@
     border-radius: 999px;
     background: #ffffff;
     color: #000000;
-    font-weight: 900;
+    font-weight: 400;
     cursor: pointer;
 }
 
@@ -114,7 +130,7 @@
 
 .dhkc-card-builder__move-button--up { grid-column: 2; grid-row: 1; }
 .dhkc-card-builder__move-button--left { grid-column: 1; grid-row: 2; }
-.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 17px; line-height: 34px; }
+.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 17px; line-height: 34px; font-weight: 400; }
 .dhkc-card-builder__move-button--right { grid-column: 3; grid-row: 2; }
 .dhkc-card-builder__move-button--down { grid-column: 2; grid-row: 3; }
 
@@ -141,7 +157,7 @@
     color: #000000;
     font-family: Montserrat, sans-serif;
     font-size: 0.95rem;
-    font-weight: 800;
+    font-weight: 400;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
