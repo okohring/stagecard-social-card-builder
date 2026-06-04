@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stagecard Social Card Creator
  * Description: Adds event-specific public social card creators and, when Stagecard is active, places them under the Programs admin menu.
- * Version: 0.6.0
+ * Version: 0.6.1
  * Author: Olivia Kohring
  * Text Domain: stagecard-social-card-builder
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Stagecard_Social_Card_Creator {
-    const VERSION = '0.6.0';
+    const VERSION = '0.6.1';
     const GITHUB_REPO = 'okohring/stagecard-social-card-builder';
     const MENU_SLUG = 'stagecard-social-card-builder';
     const OPTION_SETTINGS = 'stagecard_social_card_builder_settings';
@@ -48,7 +48,7 @@ final class Stagecard_Social_Card_Creator {
         wp_enqueue_media();
         wp_enqueue_style('stagecard-social-card-builder');
         wp_enqueue_script('stagecard-social-card-builder');
-        wp_enqueue_script('stagecard-social-card-builder-admin', plugin_dir_url(__FILE__) . 'assets/js/admin.js', array('jquery'), self::VERSION, true);
+        wp_enqueue_script('stagecard-social-card-builder-admin', plugin_dir_url(__FILE__) . 'assets/js/admin.js', array('jquery', 'media-editor', 'media-views'), self::VERSION, true);
         wp_add_inline_style('stagecard-social-card-builder', $this->admin_css());
     }
 
@@ -153,17 +153,14 @@ final class Stagecard_Social_Card_Creator {
     public function save_card() {
         if (!current_user_can('edit_posts')) { wp_die('You do not have permission to edit social cards.'); }
         check_admin_referer('stagecard_social_card_save');
-
         $original = isset($_POST['original_slug']) ? $this->normalize_slug(wp_unslash($_POST['original_slug'])) : '';
         $name = isset($_POST['card_name']) ? sanitize_text_field(wp_unslash($_POST['card_name'])) : '';
         $slug = isset($_POST['card_slug']) ? $this->normalize_slug(wp_unslash($_POST['card_slug'])) : '';
         $template = isset($_POST['template_url']) ? esc_url_raw(wp_unslash($_POST['template_url'])) : '';
         $download = isset($_POST['download_file_name']) ? sanitize_file_name(wp_unslash($_POST['download_file_name'])) : '';
-
         if (!$slug) { $slug = $this->next_slug($name ?: 'stagecard'); }
         if (!$name) { $name = ucwords(str_replace('_', ' ', $slug)); }
         if (!$download) { $download = $slug . '.png'; }
-
         $settings = $this->settings();
         $cards = $this->cards();
         if ($original && $original !== $slug && isset($cards[$original])) { unset($cards[$original]); }
