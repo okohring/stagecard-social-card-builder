@@ -34,7 +34,7 @@
 .dhkc-card-builder__controls {
     display: grid;
     gap: 12px;
-    margin: 0 auto 18px;
+    margin: 0 auto 48px;
     padding: 18px;
     border: 1px solid rgba(16, 24, 40, 0.10);
     border-radius: 16px;
