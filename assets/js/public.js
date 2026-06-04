@@ -1,11 +1,15 @@
 (function () {
     'use strict';
 
-    const config = window.DHKCSocialCardBuilder || {};
+    const globalConfig = window.DHKCSocialCardBuilder || {};
 
     class SocialCardBuilder {
         constructor(root) {
             this.root = root;
+            this.config = {
+                templateUrl: root.getAttribute('data-template-url') || globalConfig.templateUrl || '',
+                downloadFileName: root.getAttribute('data-download-file-name') || globalConfig.downloadFileName || 'stagecard-social-card.png',
+            };
             this.canvas = root.querySelector('.dhkc-card-builder__canvas');
             this.ctx = this.canvas.getContext('2d');
             this.fileInput = root.querySelector('.dhkc-card-builder__file');
@@ -64,7 +68,7 @@
                 this.drawMessage('Template image could not be loaded.');
             };
 
-            this.template.src = config.templateUrl;
+            this.template.src = this.config.templateUrl;
         }
 
         detectTransparentCircle() {
@@ -79,22 +83,22 @@
             let minY = scan.height;
             let maxX = 0;
             let maxY = 0;
-            let count = 0;
+            let found = false;
 
-            for (let y = 0; y < scan.height; y += 1) {
-                for (let x = 0; x < scan.width; x += 1) {
+            for (let y = 0; y < scan.height; y += 2) {
+                for (let x = 0; x < scan.width; x += 2) {
                     const alpha = data[(y * scan.width + x) * 4 + 3];
-                    if (alpha < 10) {
+                    if (alpha < 20) {
                         minX = Math.min(minX, x);
                         minY = Math.min(minY, y);
                         maxX = Math.max(maxX, x);
                         maxY = Math.max(maxY, y);
-                        count += 1;
+                        found = true;
                     }
                 }
             }
 
-            if (count > 1000) {
+            if (found && maxX > minX && maxY > minY) {
                 const width = maxX - minX;
                 const height = maxY - minY;
                 this.hole = {
@@ -107,54 +111,50 @@
 
         handleFile(event) {
             const file = event.target.files && event.target.files[0];
-            if (!file || !file.type.match(/^image\//)) {
+            if (!file) {
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    this.photo = img;
-                    this.fitPhotoToCircle();
-                    this.enablePhotoControls(true);
-                    this.draw();
+                const image = new Image();
+                image.onload = () => {
+                    this.photo = image;
+                    this.resetPhoto(false);
+                    this.resetButton.disabled = false;
+                    this.downloadButton.disabled = false;
+                    this.zoomInput.disabled = false;
                 };
-                img.src = reader.result;
+                image.src = reader.result;
             };
             reader.readAsDataURL(file);
         }
 
-        fitPhotoToCircle() {
+        resetPhoto(redraw = true) {
             if (!this.photo) {
                 return;
             }
 
-            const diameter = this.hole.radius * 2;
-            const baseScale = Math.max(diameter / this.photo.naturalWidth, diameter / this.photo.naturalHeight);
+            const target = this.hole.radius * 2;
+            const baseScale = Math.max(target / this.photo.width, target / this.photo.height);
+            this.photoState = {
+                x: this.hole.x,
+                y: this.hole.y,
+                scale: baseScale,
+                baseScale: baseScale,
+            };
+            this.zoomInput.value = '1';
 
-            this.photoState.baseScale = baseScale;
-            this.photoState.scale = baseScale;
-            this.photoState.x = this.hole.x;
-            this.photoState.y = this.hole.y;
-
-            this.zoomInput.min = (baseScale * 0.75).toFixed(4);
-            this.zoomInput.max = (baseScale * 4).toFixed(4);
-            this.zoomInput.step = (baseScale / 100).toFixed(4);
-            this.zoomInput.value = baseScale.toFixed(4);
-        }
-
-        enablePhotoControls(enabled) {
-            this.zoomInput.disabled = !enabled;
-            this.resetButton.disabled = !enabled;
-            this.downloadButton.disabled = !enabled;
+            if (redraw) {
+                this.draw();
+            }
         }
 
         handleZoom() {
             if (!this.photo) {
                 return;
             }
-            this.photoState.scale = parseFloat(this.zoomInput.value);
+            this.photoState.scale = this.photoState.baseScale * parseFloat(this.zoomInput.value || '1');
             this.draw();
         }
 
@@ -162,41 +162,23 @@
             if (!this.photo) {
                 return;
             }
-
             event.preventDefault();
-            const current = parseFloat(this.zoomInput.value);
-            const step = Math.max(this.photoState.baseScale / 8, 0.01);
-            const next = event.deltaY < 0 ? current + step : current - step;
-            const min = parseFloat(this.zoomInput.min);
-            const max = parseFloat(this.zoomInput.max);
-            const clamped = Math.min(max, Math.max(min, next));
-
-            this.zoomInput.value = clamped.toFixed(4);
-            this.photoState.scale = clamped;
-            this.draw();
-        }
-
-        canvasPoint(event) {
-            const rect = this.canvas.getBoundingClientRect();
-            return {
-                x: (event.clientX - rect.left) * (this.canvas.width / rect.width),
-                y: (event.clientY - rect.top) * (this.canvas.height / rect.height),
-            };
+            const current = parseFloat(this.zoomInput.value || '1');
+            const next = Math.min(4, Math.max(0.25, current + (event.deltaY < 0 ? 0.05 : -0.05)));
+            this.zoomInput.value = String(next);
+            this.handleZoom();
         }
 
         startDrag(event) {
             if (!this.photo) {
                 return;
             }
-
             this.dragging = true;
             this.canvas.setPointerCapture(event.pointerId);
-            const point = this.canvasPoint(event);
             this.dragStart = {
-                pointerX: point.x,
-                pointerY: point.y,
-                photoX: this.photoState.x,
-                photoY: this.photoState.y,
+                pointer: this.pointerPosition(event),
+                x: this.photoState.x,
+                y: this.photoState.y,
             };
         }
 
@@ -204,10 +186,9 @@
             if (!this.dragging || !this.dragStart) {
                 return;
             }
-
-            const point = this.canvasPoint(event);
-            this.photoState.x = this.dragStart.photoX + point.x - this.dragStart.pointerX;
-            this.photoState.y = this.dragStart.photoY + point.y - this.dragStart.pointerY;
+            const pointer = this.pointerPosition(event);
+            this.photoState.x = this.dragStart.x + pointer.x - this.dragStart.pointer.x;
+            this.photoState.y = this.dragStart.y + pointer.y - this.dragStart.pointer.y;
             this.draw();
         }
 
@@ -216,9 +197,12 @@
             this.dragStart = null;
         }
 
-        resetPhoto() {
-            this.fitPhotoToCircle();
-            this.draw();
+        pointerPosition(event) {
+            const rect = this.canvas.getBoundingClientRect();
+            return {
+                x: (event.clientX - rect.left) * (this.canvas.width / rect.width),
+                y: (event.clientY - rect.top) * (this.canvas.height / rect.height),
+            };
         }
 
         draw() {
@@ -234,12 +218,15 @@
                 this.ctx.arc(this.hole.x, this.hole.y, this.hole.radius, 0, Math.PI * 2);
                 this.ctx.clip();
 
-                const width = this.photo.naturalWidth * this.photoState.scale;
-                const height = this.photo.naturalHeight * this.photoState.scale;
-                const x = this.photoState.x - width / 2;
-                const y = this.photoState.y - height / 2;
-
-                this.ctx.drawImage(this.photo, x, y, width, height);
+                const width = this.photo.width * this.photoState.scale;
+                const height = this.photo.height * this.photoState.scale;
+                this.ctx.drawImage(
+                    this.photo,
+                    this.photoState.x - width / 2,
+                    this.photoState.y - height / 2,
+                    width,
+                    height
+                );
                 this.ctx.restore();
             }
 
@@ -251,29 +238,29 @@
             this.ctx.fillStyle = '#071b2e';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '32px sans-serif';
+            this.ctx.font = '28px sans-serif';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(message, this.canvas.width / 2, this.canvas.height / 2);
         }
 
         download() {
-            if (!this.photo) {
+            if (!this.templateLoaded) {
                 return;
             }
-
             this.draw();
             const link = document.createElement('a');
-            link.download = config.downloadFileName || 'social-card.png';
             link.href = this.canvas.toDataURL('image/png');
-            document.body.appendChild(link);
+            link.download = this.config.downloadFileName || 'stagecard-social-card.png';
             link.click();
-            document.body.removeChild(link);
         }
     }
 
     function init() {
         document.querySelectorAll('[data-dhkc-card-builder]').forEach((root) => {
-            new SocialCardBuilder(root);
+            if (!root.dataset.dhkcInitialized) {
+                root.dataset.dhkcInitialized = '1';
+                new SocialCardBuilder(root);
+            }
         });
     }
 
