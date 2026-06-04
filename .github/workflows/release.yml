@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, for example 0.6.4'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -23,7 +28,11 @@ jobs:
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            VERSION=$(grep -E "^[[:space:]]*\*[[:space:]]*Version:" stagecard-social-card-builder.php | sed -E 's/.*Version:[[:space:]]*//')
+            if [[ -n "${{ github.event.inputs.version }}" ]]; then
+              VERSION="${{ github.event.inputs.version }}"
+            else
+              VERSION=$(grep -E "^[[:space:]]*\*[[:space:]]*Version:" stagecard-social-card-builder.php | sed -E 's/.*Version:[[:space:]]*//')
+            fi
             TAG_NAME="v${VERSION}"
           fi
           VERSION="${TAG_NAME#v}"
@@ -42,6 +51,8 @@ jobs:
             --exclude='build' \
             --exclude='.DS_Store' \
             ./ build/stagecard-social-card-builder/
+          sed -i -E "s/(\* Version:[[:space:]]*)[0-9]+\.[0-9]+\.[0-9]+/\1${{ steps.version.outputs.version }}/" build/stagecard-social-card-builder/stagecard-social-card-builder.php
+          sed -i -E "s/(const VERSION = ')[0-9]+\.[0-9]+\.[0-9]+(';)/\1${{ steps.version.outputs.version }}\2/" build/stagecard-social-card-builder/stagecard-social-card-builder.php
           cd build
           zip -r "${{ steps.version.outputs.zip_name }}" stagecard-social-card-builder
 
