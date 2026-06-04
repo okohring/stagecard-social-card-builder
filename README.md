@@ -23,3 +23,7 @@ When Stagecard is active, this plugin appears under `Programs > Social Card Buil
 ## Updates
 
 The plugin checks this GitHub repository's latest release. Attach a built ZIP named like `stagecard-social-card-builder-v0-4-1.zip` to each release.
+
+## Connector Test
+
+GitHub write access is working.
