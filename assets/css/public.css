@@ -1,12 +1,12 @@
 .dhkc-card-builder {
     box-sizing: border-box;
-    max-width: 820px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 18px;
     border: 1px solid rgba(16, 24, 40, 0.12);
-    border-radius: 20px;
+    border-radius: 18px;
     background: #ffffff;
-    box-shadow: 0 12px 30px rgba(16, 24, 40, 0.08);
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.06);
     color: #000000;
     font-family: Montserrat, sans-serif;
 }
@@ -20,40 +20,44 @@
 }
 
 .dhkc-card-builder__note {
-    margin: 0 auto 16px;
-    max-width: 680px;
+    margin: 0 auto 14px;
+    max-width: 620px;
     color: #000000;
     font-size: 0.95rem;
+    font-weight: 600;
     line-height: 1.45;
     text-align: center;
 }
 
 .dhkc-card-builder__controls {
     display: grid;
-    justify-items: center;
     gap: 16px;
-    margin-bottom: 18px;
-    padding: 20px;
+    margin: 0 auto 18px;
+    padding: 18px;
     border: 1px solid rgba(16, 24, 40, 0.10);
     border-radius: 16px;
     background: #f9fafb;
-    text-align: center;
 }
 
 .dhkc-card-builder__control-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-    gap: 18px;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 16px 22px;
     align-items: end;
-    width: min(760px, 100%);
+    width: 100%;
+    max-width: 650px;
     margin: 0 auto;
+}
+
+.dhkc-card-builder__upload {
+    grid-column: 1 / -1;
 }
 
 .dhkc-card-builder__upload,
 .dhkc-card-builder__range,
 .dhkc-card-builder__move {
     display: grid;
-    gap: 8px;
+    gap: 7px;
     margin: 0;
     font-weight: 700;
     color: #000000;
@@ -66,10 +70,10 @@
 }
 
 .dhkc-card-builder__file {
-    min-height: 46px;
-    padding: 10px 12px;
+    min-height: 44px;
+    padding: 9px 12px;
     border: 1px solid rgba(16, 24, 40, 0.18);
-    border-radius: 12px;
+    border-radius: 10px;
     background: #ffffff;
     color: #000000;
 }
@@ -80,9 +84,9 @@
 
 .dhkc-card-builder__move-grid {
     display: grid;
-    grid-template-columns: repeat(3, 36px);
-    grid-template-rows: repeat(3, 36px);
-    gap: 6px;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 5px;
     justify-content: start;
     align-items: center;
 }
@@ -91,12 +95,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-height: 36px;
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
     padding: 0;
-    border: 1px solid rgba(16, 24, 40, 0.18);
-    border-radius: 10px;
+    border: 1px solid rgba(16, 24, 40, 0.16);
+    border-radius: 999px;
     background: #ffffff;
     color: #000000;
     font-weight: 900;
@@ -110,7 +114,7 @@
 
 .dhkc-card-builder__move-button--up { grid-column: 2; grid-row: 1; }
 .dhkc-card-builder__move-button--left { grid-column: 1; grid-row: 2; }
-.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 18px; line-height: 36px; }
+.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 17px; line-height: 34px; }
 .dhkc-card-builder__move-button--right { grid-column: 3; grid-row: 2; }
 .dhkc-card-builder__move-button--down { grid-column: 2; grid-row: 3; }
 
@@ -119,7 +123,8 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    width: min(680px, 100%);
+    width: 100%;
+    max-width: 650px;
     margin: 0 auto;
 }
 
@@ -128,14 +133,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 44px;
-    padding: 12px 18px;
+    min-height: 42px;
+    padding: 11px 18px;
     border: 0;
     border-radius: 999px;
     background: #27b9e6;
     color: #000000;
     font-family: Montserrat, sans-serif;
-    font-size: inherit;
+    font-size: 0.95rem;
     font-weight: 800;
     line-height: 1;
     text-decoration: none;
@@ -164,7 +169,8 @@
 
 .dhkc-card-builder__editor {
     position: relative;
-    width: 100%;
+    width: 85%;
+    margin: 0 auto;
     overflow: hidden;
     border-radius: 16px;
     background: #071b2e;
@@ -185,7 +191,8 @@
 
 @media (max-width: 760px) {
     .dhkc-card-builder {
-        padding: 16px;
+        max-width: 100%;
+        padding: 14px;
         border-radius: 16px;
     }
 
@@ -206,6 +213,10 @@
     }
 
     .dhkc-card-builder__button {
+        width: 100%;
+    }
+
+    .dhkc-card-builder__editor {
         width: 100%;
     }
 }
