@@ -16,6 +16,7 @@
             this.zoomInput = root.querySelector('.dhkc-card-builder__zoom');
             this.resetButton = root.querySelector('[data-dhkc-reset]');
             this.downloadButton = root.querySelector('[data-dhkc-download]');
+            this.moveButtons = root.querySelectorAll('[data-dhkc-move]');
 
             this.template = new Image();
             this.template.crossOrigin = 'anonymous';
@@ -47,6 +48,9 @@
             this.zoomInput.addEventListener('input', () => this.handleZoom());
             this.resetButton.addEventListener('click', () => this.resetPhoto());
             this.downloadButton.addEventListener('click', () => this.download());
+            this.moveButtons.forEach((button) => {
+                button.addEventListener('click', () => this.movePhoto(button.getAttribute('data-dhkc-move')));
+            });
 
             this.canvas.addEventListener('pointerdown', (event) => this.startDrag(event));
             this.canvas.addEventListener('pointermove', (event) => this.moveDrag(event));
@@ -124,6 +128,8 @@
                     this.resetButton.disabled = false;
                     this.downloadButton.disabled = false;
                     this.zoomInput.disabled = false;
+                    this.moveButtons.forEach((button) => { button.disabled = false; });
+                    this.draw();
                 };
                 image.src = reader.result;
             };
@@ -148,6 +154,27 @@
             if (redraw) {
                 this.draw();
             }
+        }
+
+        movePhoto(direction) {
+            if (!this.photo) {
+                return;
+            }
+
+            const amount = Math.max(8, Math.round(this.hole.radius * 0.035));
+            if (direction === 'up') {
+                this.photoState.y -= amount;
+            }
+            if (direction === 'down') {
+                this.photoState.y += amount;
+            }
+            if (direction === 'left') {
+                this.photoState.x -= amount;
+            }
+            if (direction === 'right') {
+                this.photoState.x += amount;
+            }
+            this.draw();
         }
 
         handleZoom() {
@@ -237,8 +264,8 @@
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.fillStyle = '#071b2e';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '28px sans-serif';
+            this.ctx.fillStyle = '#000000';
+            this.ctx.font = '28px Montserrat, sans-serif';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(message, this.canvas.width / 2, this.canvas.height / 2);
         }
