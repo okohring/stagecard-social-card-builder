@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stagecard Social Card Builder
  * Description: Adds a public social card image builder and, when Stagecard is active, places it under the Programs admin menu.
- * Version: 0.4.0
+ * Version: 0.4.1
  * Author: Olivia Kohring
  * Text Domain: stagecard-social-card-builder
  */
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Stagecard_Social_Card_Builder {
-    const VERSION = '0.4.0';
+    const VERSION = '0.4.1';
     const GITHUB_REPO = 'okohring/stagecard-social-card-builder';
     const SHORTCODE = 'dhkc_social_card_builder';
     const ALIAS_SHORTCODE = 'stagecard_social_card_builder';
