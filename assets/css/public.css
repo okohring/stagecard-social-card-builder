@@ -2,40 +2,40 @@
     box-sizing: border-box;
     max-width: 760px;
     margin: 0 auto;
-    padding: 18px;
+    padding: 20px;
     border: 1px solid rgba(16, 24, 40, 0.12);
     border-radius: 18px;
     background: #ffffff;
     box-shadow: 0 10px 24px rgba(16, 24, 40, 0.06);
-    color: #000000;
-    font-family: Montserrat, sans-serif;
-    font-weight: 400;
+    color: #000000 !important;
+    font-family: Montserrat, Arial, sans-serif !important;
+    font-weight: 400 !important;
 }
 
 .dhkc-card-builder *,
 .dhkc-card-builder *::before,
 .dhkc-card-builder *::after {
     box-sizing: inherit;
-    color: #000000;
-    font-family: Montserrat, sans-serif;
-    font-weight: 400;
+    color: #000000 !important;
+    font-family: Montserrat, Arial, sans-serif !important;
+    font-weight: 400 !important;
 }
 
 .dhkc-card-builder__note {
-    margin: 0 auto 14px;
+    margin: 0 auto 18px;
     max-width: 620px;
-    color: #000000;
+    color: #000000 !important;
     font-size: 0.95rem;
-    font-weight: 400;
-    line-height: 1.45;
+    font-weight: 400 !important;
+    line-height: 1.5;
     text-align: center;
 }
 
 .dhkc-card-builder__controls {
     display: grid;
-    gap: 12px;
-    margin: 0 auto 48px;
-    padding: 18px;
+    gap: 18px;
+    margin: 0 auto;
+    padding: 22px;
     border: 1px solid rgba(16, 24, 40, 0.10);
     border-radius: 16px;
     background: #f9fafb;
@@ -43,9 +43,9 @@
 
 .dhkc-card-builder__control-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px;
-    gap: 12px 22px;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) 148px;
+    gap: 18px 26px;
+    align-items: end;
     width: 100%;
     max-width: 650px;
     margin: 0 auto;
@@ -61,10 +61,11 @@
 .dhkc-card-builder__range,
 .dhkc-card-builder__move {
     display: grid;
-    gap: 7px;
+    gap: 8px;
     margin: 0;
-    font-weight: 400;
-    color: #000000;
+    color: #000000 !important;
+    font-size: 0.95rem;
+    font-weight: 400 !important;
 }
 
 .dhkc-card-builder__range {
@@ -82,15 +83,16 @@
 }
 
 .dhkc-card-builder__file {
-    display: block;
+    display: flex;
+    align-items: center;
     width: min(620px, 100%);
-    min-height: 44px;
+    min-height: 46px;
     margin: 0 auto;
-    padding: 9px 12px;
-    border: 1px solid rgba(16, 24, 40, 0.18);
-    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(16, 24, 40, 0.16);
+    border-radius: 12px;
     background: #ffffff;
-    color: #000000;
+    color: #000000 !important;
     text-align: center;
 }
 
@@ -118,8 +120,9 @@
     border: 1px solid rgba(16, 24, 40, 0.16);
     border-radius: 999px;
     background: #ffffff;
-    color: #000000;
-    font-weight: 400;
+    color: #000000 !important;
+    font-size: 0.9rem;
+    font-weight: 400 !important;
     cursor: pointer;
 }
 
@@ -130,7 +133,7 @@
 
 .dhkc-card-builder__move-button--up { grid-column: 2; grid-row: 1; }
 .dhkc-card-builder__move-button--left { grid-column: 1; grid-row: 2; }
-.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 17px; line-height: 34px; font-weight: 400; }
+.dhkc-card-builder__move-center { grid-column: 2; grid-row: 2; text-align: center; font-size: 15px; line-height: 34px; font-weight: 400 !important; }
 .dhkc-card-builder__move-button--right { grid-column: 3; grid-row: 2; }
 .dhkc-card-builder__move-button--down { grid-column: 2; grid-row: 3; }
 
@@ -138,10 +141,10 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     max-width: 650px;
-    margin: 0 auto;
+    margin: 4px auto 0;
 }
 
 .dhkc-card-builder__button,
@@ -150,14 +153,14 @@
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    padding: 11px 18px;
+    padding: 11px 20px;
     border: 0;
     border-radius: 999px;
     background: #27b9e6;
-    color: #000000;
-    font-family: Montserrat, sans-serif;
+    color: #000000 !important;
+    font-family: Montserrat, Arial, sans-serif !important;
     font-size: 0.95rem;
-    font-weight: 400;
+    font-weight: 400 !important;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
@@ -168,7 +171,7 @@
 .dhkc-card-builder__button:focus,
 .dhkc-card-builder__button:focus-visible {
     transform: translateY(-1px);
-    color: #000000;
+    color: #000000 !important;
     text-decoration: none;
 }
 
@@ -176,7 +179,7 @@
     cursor: not-allowed;
     opacity: 0.45;
     transform: none;
-    color: #000000;
+    color: #000000 !important;
 }
 
 .dhkc-card-builder__button--secondary {
@@ -186,7 +189,7 @@
 .dhkc-card-builder__editor {
     position: relative;
     width: 85%;
-    margin: 0 auto;
+    margin: 56px auto 0;
     overflow: hidden;
     border-radius: 16px;
     background: #071b2e;
@@ -234,5 +237,6 @@
 
     .dhkc-card-builder__editor {
         width: 100%;
+        margin-top: 36px;
     }
 }
