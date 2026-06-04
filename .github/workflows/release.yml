@@ -1,0 +1,56 @@
+name: Build Release ZIP
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set version variables
+        id: version
+        shell: bash
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            VERSION=$(grep -E "^[[:space:]]*\*[[:space:]]*Version:" stagecard-social-card-builder.php | sed -E 's/.*Version:[[:space:]]*//')
+            TAG_NAME="v${VERSION}"
+          fi
+          VERSION="${TAG_NAME#v}"
+          ZIP_VERSION="${VERSION//./-}"
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=stagecard-social-card-builder-v${ZIP_VERSION}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Build plugin ZIP
+        shell: bash
+        run: |
+          mkdir -p build/stagecard-social-card-builder
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='build' \
+            --exclude='.DS_Store' \
+            ./ build/stagecard-social-card-builder/
+          cd build
+          zip -r "${{ steps.version.outputs.zip_name }}" stagecard-social-card-builder
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          name: ${{ steps.version.outputs.tag_name }}
+          body: |
+            Automated release for Stagecard Social Card Builder ${{ steps.version.outputs.version }}.
+          files: build/${{ steps.version.outputs.zip_name }}
+          make_latest: true
