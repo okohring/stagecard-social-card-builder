@@ -2,19 +2,42 @@
     'use strict';
 
     $(function () {
-        const $url = $('.stagecard-social-card-template-url');
-        const $preview = $('.stagecard-social-card-template-preview');
+        const $url = $('.sccc-template-url');
+        const $preview = $('.sccc-preview-img');
+        const $shortcodeName = $('.sccc-shortcode-name');
+        const $shortcodePreview = $('.sccc-shortcode-preview');
         let frame = null;
 
         function updatePreview(url) {
             if (!url) {
+                $preview.attr('src', '').hide();
                 return;
             }
-            $preview.attr('src', url);
+            $preview.attr('src', url).show();
         }
 
-        $('.stagecard-social-card-template-upload').on('click', function (event) {
+        function normalizeShortcode(value) {
+            value = String(value || '').trim().replace(/^\[/, '').replace(/\]$/, '');
+            value = value.replace(/_social_card$/i, '');
+            value = value.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').replace(/_+/g, '_');
+            return value || 'stagecard';
+        }
+
+        function updateShortcodePreview() {
+            if (!$shortcodeName.length || !$shortcodePreview.length) {
+                return;
+            }
+            const slug = normalizeShortcode($shortcodeName.val());
+            $shortcodePreview.text('[' + slug + '_social_card]');
+        }
+
+        $('.sccc-template-upload').on('click', function (event) {
             event.preventDefault();
+
+            if (typeof wp === 'undefined' || !wp.media) {
+                alert('The WordPress Media Library could not be loaded. Refresh the page and try again.');
+                return;
+            }
 
             if (frame) {
                 frame.open();
@@ -22,9 +45,9 @@
             }
 
             frame = wp.media({
-                title: 'Choose social card template',
+                title: 'Choose social card graphic',
                 button: {
-                    text: 'Use this template'
+                    text: 'Use this graphic'
                 },
                 multiple: false,
                 library: {
@@ -44,15 +67,11 @@
             frame.open();
         });
 
-        $('.stagecard-social-card-template-reset').on('click', function (event) {
-            event.preventDefault();
-            const defaultUrl = $(this).attr('data-default-url') || '';
-            $url.val(defaultUrl).trigger('change');
-            updatePreview(defaultUrl);
-        });
-
         $url.on('input change', function () {
             updatePreview($(this).val());
         });
+
+        $shortcodeName.on('input change', updateShortcodePreview);
+        updateShortcodePreview();
     });
 })(jQuery);
