@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stagecard Social Card Creator
  * Description: Adds event-specific public social card creators and, when Stagecard is active, places them under the Programs admin menu.
- * Version: 0.78
+ * Version: 0.79
  * Author: Olivia Kohring
  * Text Domain: stagecard-social-card-builder
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Stagecard_Social_Card_Creator {
-    const VERSION = '0.78';
+    const VERSION = '0.79';
     const GITHUB_REPO = 'okohring/stagecard-social-card-builder';
     const MENU_SLUG = 'stagecard-social-card-builder';
     const OPTION_SETTINGS = 'stagecard_social_card_builder_settings';
