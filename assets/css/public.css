@@ -118,12 +118,12 @@
     font-weight: 400 !important;
     line-height: 1;
     cursor: pointer;
-    transition: transform 160ms ease, opacity 160ms ease;
+    transition: opacity 160ms ease;
 }
 
 .dhkc-card-builder__upload:hover .dhkc-card-builder__file-button,
 .dhkc-card-builder__upload:focus-within .dhkc-card-builder__file-button {
-    transform: translateY(-1px);
+    opacity: 0.92;
 }
 
 .dhkc-card-builder__adjust-row {
