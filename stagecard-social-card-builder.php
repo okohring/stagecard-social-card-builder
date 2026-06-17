@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Stagecard Social Card Creator
  * Description: Adds event-specific public social card creators and, when Stagecard is active, places them under the Programs admin menu.
- * Version: 0.6.3
+ * Version: 0.75
  * Author: Olivia Kohring
  * Text Domain: stagecard-social-card-builder
  */
@@ -10,7 +10,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Stagecard_Social_Card_Creator {
-    const VERSION = '0.6.3';
+    const VERSION = '0.75';
     const GITHUB_REPO = 'okohring/stagecard-social-card-builder';
     const MENU_SLUG = 'stagecard-social-card-builder';
     const OPTION_SETTINGS = 'stagecard_social_card_builder_settings';
@@ -213,8 +213,8 @@ final class Stagecard_Social_Card_Creator {
                     <div class="sccc-grid"><label for="sccc-template">Upload Social Card Graphic</label><div><div class="sccc-row"><input id="sccc-template" class="regular-text sccc-template-url" type="url" name="template_url" value="<?php echo esc_attr($form_template); ?>" placeholder="Choose a transparent PNG"><button type="button" class="button sccc-template-upload">Choose from Media Library</button></div><p class="sccc-help">The plugin detects the transparent section and places the user photo there.</p><img class="sccc-preview-img" src="<?php echo esc_url($form_template); ?>" alt="Social card graphic preview" <?php echo $form_template ? '' : 'style="display:none;"'; ?>></div></div>
                     <div class="sccc-grid"><label for="sccc-name">Name Social Card</label><div><input id="sccc-name" class="regular-text" type="text" name="card_name" value="<?php echo esc_attr($form_name); ?>" placeholder="Example Social Card"></div></div>
                     <div class="sccc-grid"><label for="sccc-download">Name File Download</label><div><input id="sccc-download" class="regular-text" type="text" name="download_file_name" value="<?php echo esc_attr($form_download); ?>" placeholder="example.png"></div></div>
-                    <div class="sccc-grid"><label for="sccc-shortcode-name">Name Shortcode</label><div><input id="sccc-shortcode-name" class="regular-text sccc-shortcode-name" type="text" name="card_slug" value="<?php echo esc_attr($form_slug); ?>"><p class="sccc-help">Shortcode: <code class="sccc-shortcode-preview"><?php echo esc_html($this->shortcode_for_slug($form_slug)); ?></code></p></div></div>
-                    <p><button type="submit" class="button button-primary">Save</button> <?php if ($editing) : ?><a class="button" href="<?php echo esc_url(admin_url('admin.php?page=' . self::MENU_SLUG)); ?>">Cancel edit</a><?php endif; ?></p>
+                    <div class="sccc-grid"><label for="sccc-shortcode-name">Name Shortcode</label><div><input id="sccc-shortcode-name" class="regular-text" type="text" name="card_slug" value="<?php echo esc_attr($form_slug); ?>" placeholder="example_social_card"><p class="sccc-help">Use letters, numbers, hyphens, or underscores. The saved shortcode will be <?php echo esc_html($this->shortcode_for_slug($form_slug)); ?>.</p></div></div>
+                    <p><button type="submit" class="button button-primary">Save Social Card</button></p>
                 </form>
                 <div class="sccc-preview-box"><h2>Preview Graphic</h2><?php echo $form_template ? $this->builder_markup($form_template, $form_download ?: ($form_slug . '.png')) : '<div class="sccc-empty">Upload a social card graphic to preview the image tools.</div>'; ?></div>
             <?php endif; ?>
@@ -223,11 +223,12 @@ final class Stagecard_Social_Card_Creator {
     }
 
     private function saved_cards_table($cards) {
-        if (!$cards) { echo '<div class="sccc-empty">No social cards have been saved yet.</div>'; return; }
-        echo '<table class="sccc-table"><thead><tr><th>Social Card</th><th>Shortcode</th><th>Actions</th></tr></thead><tbody>';
+        if (!$cards) { echo '<div class="sccc-empty">No saved social cards yet.</div>'; return; }
+        echo '<table class="sccc-table"><thead><tr><th>Name</th><th>Shortcode</th><th>Download Name</th><th>Actions</th></tr></thead><tbody>';
         foreach ($cards as $slug => $card) {
-            $name = !empty($card['name']) ? $card['name'] : (!empty($card['label']) ? $card['label'] : ucwords(str_replace('_', ' ', $slug)));
-            echo '<tr><td><strong>' . esc_html($name) . '</strong></td><td><input class="sccc-shortcode" readonly onclick="this.select();" value="' . esc_attr($this->shortcode_for_slug($slug)) . '"></td><td><div class="sccc-actions"><a class="button" href="' . esc_url(admin_url('admin.php?page=' . self::MENU_SLUG . '&edit=' . sanitize_key($slug))) . '">Edit</a><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'Delete this social card?\');">';
+            $slug = $this->normalize_slug($slug);
+            $edit_url = admin_url('admin.php?page=' . self::MENU_SLUG . '&edit=' . rawurlencode($slug));
+            echo '<tr><td>' . esc_html($card['name'] ?? ucwords(str_replace('_', ' ', $slug))) . '</td><td><input class="sccc-shortcode" readonly value="' . esc_attr($this->shortcode_for_slug($slug)) . '" onclick="this.select();"></td><td>' . esc_html($this->download_name($card)) . '</td><td><div class="sccc-actions"><a class="button" href="' . esc_url($edit_url) . '">Edit</a><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'Delete this social card?\');">';
             wp_nonce_field('stagecard_social_card_delete');
             echo '<input type="hidden" name="action" value="stagecard_social_card_delete"><input type="hidden" name="card_slug" value="' . esc_attr($slug) . '"><button type="submit" class="button button-link-delete">Delete</button></form></div></td></tr>';
         }
@@ -235,29 +236,34 @@ final class Stagecard_Social_Card_Creator {
     }
 
     public function render_shortcode($atts = array(), $content = null, $tag = '') {
-        $atts = shortcode_atts(array('card' => ''), (array) $atts, (string) $tag);
-        $slug = !empty($atts['card']) ? $this->normalize_slug($atts['card']) : $this->normalize_slug(str_replace('_social_card', '', (string) $tag));
-        if (!$slug || in_array($tag, array('stagecard_social_card_builder','dhkc_social_card_builder'), true)) { $slug = $this->first_card_slug(); }
-        $card = $this->card_for_slug($slug);
-        if (!$card || empty($card['template_url'])) { return '<div class="sccc-empty">Social card not found.</div>'; }
-        return $this->builder_markup($card['template_url'], $this->download_name($card));
+        $atts = shortcode_atts(array('card' => '', 'template' => '', 'download' => ''), $atts, $tag);
+        $card = array();
+        if (!empty($atts['card'])) { $card = $this->card_for_slug($atts['card']); }
+        if (!$card && $tag && substr($tag, -12) === '_social_card') { $card = $this->card_for_slug(substr($tag, 0, -12)); }
+        if (!$card) { $first = $this->first_card_slug(); $card = $first ? $this->card_for_slug($first) : array(); }
+        $template_url = !empty($atts['template']) ? esc_url_raw($atts['template']) : (!empty($card['template_url']) ? $card['template_url'] : '');
+        if (!$template_url) { return '<p>Social card template missing.</p>'; }
+        $download_name = !empty($atts['download']) ? sanitize_file_name($atts['download']) : $this->download_name($card);
+        $this->register_assets();
+        wp_enqueue_style('stagecard-social-card-builder');
+        wp_enqueue_script('stagecard-social-card-builder');
+        wp_localize_script('stagecard-social-card-builder', 'DHKCSocialCardBuilder', array('templateUrl' => esc_url_raw($template_url), 'downloadFileName' => $download_name));
+        return $this->builder_markup($template_url, $download_name);
     }
 
     private function builder_markup($template_url, $download_name) {
-        wp_enqueue_style('stagecard-social-card-builder');
-        wp_enqueue_script('stagecard-social-card-builder');
-        ob_start(); ?>
+        ob_start();
+        ?>
         <div class="dhkc-card-builder" data-dhkc-card-builder data-template-url="<?php echo esc_url($template_url); ?>" data-download-file-name="<?php echo esc_attr($download_name); ?>">
-            <p class="dhkc-card-builder__note">Use the tools below to resize and move your image, or drag inside the template area. Then download and share!</p>
-            <div class="dhkc-card-builder__controls" aria-label="Photo adjustment controls"><div class="dhkc-card-builder__control-grid"><label class="dhkc-card-builder__upload"><span>Upload image</span><input class="dhkc-card-builder__file" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="dhkc-card-builder__range"><span>Image size</span><input class="dhkc-card-builder__zoom" type="range" min="0.25" max="4" step="0.01" value="1" disabled></label><label class="dhkc-card-builder__move"><span>Move image</span><span class="dhkc-card-builder__move-grid"><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--up" data-dhkc-move="up" disabled aria-label="Move image up">↑</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--left" data-dhkc-move="left" disabled aria-label="Move image left">←</button><span class="dhkc-card-builder__move-center" aria-hidden="true">✥</span><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--right" data-dhkc-move="right" disabled aria-label="Move image right">→</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--down" data-dhkc-move="down" disabled aria-label="Move image down">↓</button></span></label></div><div class="dhkc-card-builder__actions"><button type="button" class="dhkc-card-builder__button dhkc-card-builder__button--secondary" data-dhkc-reset disabled>Reset image</button><button type="button" class="dhkc-card-builder__button" data-dhkc-download disabled>Download PNG</button></div></div>
-            <div class="dhkc-card-builder__editor" aria-label="Social card preview editor"><canvas class="dhkc-card-builder__canvas" width="1200" height="1200"></canvas></div>
+            <div class="dhkc-card-builder__controls" aria-label="Photo adjustment controls"><div class="dhkc-card-builder__control-grid"><label class="dhkc-card-builder__upload"><span>Upload image</span><span class="dhkc-card-builder__file-wrap"><input class="dhkc-card-builder__file" type="file" accept="image/png,image/jpeg,image/webp"><span class="dhkc-card-builder__file-name" data-dhkc-file-name aria-live="polite">No file chosen</span></span></label><label class="dhkc-card-builder__range"><span>Image size</span><input class="dhkc-card-builder__zoom" type="range" min="0.25" max="4" step="0.01" value="1" disabled></label><label class="dhkc-card-builder__move"><span>Move image</span><span class="dhkc-card-builder__move-grid"><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--up" data-dhkc-move="up" disabled aria-label="Move image up">↑</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--left" data-dhkc-move="left" disabled aria-label="Move image left">←</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--right" data-dhkc-move="right" disabled aria-label="Move image right">→</button><button type="button" class="dhkc-card-builder__move-button dhkc-card-builder__move-button--down" data-dhkc-move="down" disabled aria-label="Move image down">↓</button></span></label></div><div class="dhkc-card-builder__actions"><button type="button" class="dhkc-card-builder__button dhkc-card-builder__button--secondary" data-dhkc-reset disabled>Reset image</button><button type="button" class="dhkc-card-builder__button" data-dhkc-download disabled>Download PNG</button></div></div>
+            <div class="dhkc-card-builder__editor"><canvas class="dhkc-card-builder__canvas" width="1201" height="1201" aria-label="Social card preview"></canvas></div>
         </div>
-        <?php return ob_get_clean();
+        <?php
+        return ob_get_clean();
     }
-
-    public function maybe_clear_github_update_cache() { if (is_admin() && current_user_can('update_plugins') && (isset($_GET['force-check']) || isset($_GET['stagecard_social_card_clear_update_cache']))) { delete_site_transient('stagecard_social_card_github_release'); delete_site_transient('update_plugins'); if (function_exists('wp_clean_plugins_cache')) { wp_clean_plugins_cache(true); } } }
     public function check_github_plugin_update($transient) { if (empty($transient) || !is_object($transient)) { return $transient; } $plugin_file = plugin_basename(__FILE__); if (empty($transient->checked)) { $transient->checked = array(); } if (empty($transient->checked[$plugin_file])) { $transient->checked[$plugin_file] = self::VERSION; } if (empty($transient->response) || !is_array($transient->response)) { $transient->response = array(); } if (empty($transient->no_update) || !is_array($transient->no_update)) { $transient->no_update = array(); } $release = $this->github_latest_release(); if (!$release || empty($release['version']) || empty($release['download_url'])) { return $transient; } if (!version_compare($release['version'], self::VERSION, '>')) { $transient->no_update[$plugin_file] = (object) array('id'=>self::GITHUB_REPO,'slug'=>dirname($plugin_file),'plugin'=>$plugin_file,'new_version'=>self::VERSION,'url'=>$release['html_url'],'package'=>''); unset($transient->response[$plugin_file]); return $transient; } unset($transient->no_update[$plugin_file]); $transient->response[$plugin_file] = (object) array('id'=>self::GITHUB_REPO,'slug'=>dirname($plugin_file),'plugin'=>$plugin_file,'new_version'=>$release['version'],'url'=>$release['html_url'],'package'=>$release['download_url'],'tested'=>$release['tested'],'requires'=>$release['requires'],'requires_php'=>$release['requires_php']); return $transient; }
     public function github_plugin_info($result, $action, $args) { if ($action !== 'plugin_information' || empty($args->slug) || $args->slug !== dirname(plugin_basename(__FILE__))) { return $result; } $release = $this->github_latest_release(false); if (!$release) { return $result; } return (object) array('name'=>'Stagecard Social Card Creator','slug'=>dirname(plugin_basename(__FILE__)),'version'=>$release['version'],'author'=>'<a href="https://oliviakohring.com/">Olivia Kohring</a>','homepage'=>$release['html_url'],'download_link'=>$release['download_url'],'requires'=>$release['requires'],'tested'=>$release['tested'],'requires_php'=>$release['requires_php'],'last_updated'=>$release['published_at'],'sections'=>array('description'=>'Stagecard Social Card Creator lets public visitors upload, position, and export a photo inside event-specific social card graphics.','changelog'=>$release['body'] ? wp_kses_post(wpautop($release['body'])) : 'See the GitHub release notes.')); }
     private function github_latest_release($use_cache = true) { $cache_key = 'stagecard_social_card_github_release'; if ($use_cache) { $cached = get_site_transient($cache_key); if (is_array($cached)) { return $cached; } } $response = wp_remote_get('https://api.github.com/repos/' . self::GITHUB_REPO . '/releases/latest', array('timeout'=>12,'headers'=>array('Accept'=>'application/vnd.github+json','User-Agent'=>'Stagecard-Social-Card-Creator/' . self::VERSION . '; ' . home_url('/')))); if (is_wp_error($response)) { return false; } $code = wp_remote_retrieve_response_code($response); if ($code < 200 || $code >= 300) { return false; } $data = json_decode(wp_remote_retrieve_body($response), true); if (!is_array($data) || empty($data['tag_name'])) { return false; } $version = ltrim((string) $data['tag_name'], 'vV'); $download_url = ''; if (!empty($data['assets']) && is_array($data['assets'])) { foreach ($data['assets'] as $asset) { $name = isset($asset['name']) ? strtolower((string) $asset['name']) : ''; if ($name && substr($name, -4) === '.zip' && !empty($asset['browser_download_url'])) { $download_url = esc_url_raw($asset['browser_download_url']); break; } } } if (!$download_url && $version) { $download_url = esc_url_raw('https://github.com/' . self::GITHUB_REPO . '/releases/download/' . rawurlencode((string) $data['tag_name']) . '/stagecard-social-card-builder-v' . str_replace('.', '-', $version) . '.zip'); } if (!$download_url) { return false; } $release = array('version'=>$version,'html_url'=>!empty($data['html_url']) ? esc_url_raw($data['html_url']) : 'https://github.com/' . self::GITHUB_REPO,'download_url'=>$download_url,'published_at'=>!empty($data['published_at']) ? sanitize_text_field($data['published_at']) : '','body'=>!empty($data['body']) ? wp_kses_post(wpautop($data['body'])) : '','requires'=>'5.8','tested'=>'6.8','requires_php'=>'7.4'); set_site_transient($cache_key, $release, 5 * MINUTE_IN_SECONDS); return $release; }
+    public function maybe_clear_github_update_cache() { if (!empty($_GET['force-check']) || (!empty($_GET['action']) && $_GET['action'] === 'upgrade-plugin')) { delete_site_transient('stagecard_social_card_github_release'); } }
 }
 new Stagecard_Social_Card_Creator();
