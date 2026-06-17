@@ -15,6 +15,7 @@
             this.fileInput = root.querySelector('.dhkc-card-builder__file');
             this.fileName = root.querySelector('[data-dhkc-file-name]');
             this.zoomInput = root.querySelector('.dhkc-card-builder__zoom');
+            this.zoomButtons = root.querySelectorAll('[data-dhkc-zoom]');
             this.resetButton = root.querySelector('[data-dhkc-reset]');
             this.downloadButton = root.querySelector('[data-dhkc-download]');
             this.moveButtons = root.querySelectorAll('[data-dhkc-move]');
@@ -46,7 +47,12 @@
 
         bindEvents() {
             this.fileInput.addEventListener('change', (event) => this.handleFile(event));
-            this.zoomInput.addEventListener('input', () => this.handleZoom());
+            if (this.zoomInput) {
+                this.zoomInput.addEventListener('input', () => this.handleZoom());
+            }
+            this.zoomButtons.forEach((button) => {
+                button.addEventListener('click', () => this.handleZoomStep(button.getAttribute('data-dhkc-zoom')));
+            });
             this.resetButton.addEventListener('click', () => this.resetPhoto());
             this.downloadButton.addEventListener('click', () => this.download());
             this.moveButtons.forEach((button) => {
@@ -131,7 +137,8 @@
                     this.resetPhoto(false);
                     this.resetButton.disabled = false;
                     this.downloadButton.disabled = false;
-                    this.zoomInput.disabled = false;
+                    if (this.zoomInput) { this.zoomInput.disabled = false; }
+                    this.zoomButtons.forEach((button) => { button.disabled = false; });
                     this.moveButtons.forEach((button) => { button.disabled = false; });
                     this.draw();
                 };
@@ -153,7 +160,7 @@
                 scale: baseScale,
                 baseScale: baseScale,
             };
-            this.zoomInput.value = '1';
+            if (this.zoomInput) { this.zoomInput.value = '1'; }
 
             if (redraw) {
                 this.draw();
@@ -182,15 +189,26 @@
         }
 
         handleZoom() {
-            if (!this.photo) {
+            if (!this.photo || !this.zoomInput) {
                 return;
             }
             this.photoState.scale = this.photoState.baseScale * parseFloat(this.zoomInput.value || '1');
             this.draw();
         }
 
+        handleZoomStep(direction) {
+            if (!this.photo || !this.zoomInput) {
+                return;
+            }
+            const current = parseFloat(this.zoomInput.value || '1');
+            const step = direction === 'in' ? 0.08 : -0.08;
+            const next = Math.min(4, Math.max(0.25, current + step));
+            this.zoomInput.value = String(next);
+            this.handleZoom();
+        }
+
         handleWheel(event) {
-            if (!this.photo) {
+            if (!this.photo || !this.zoomInput) {
                 return;
             }
             event.preventDefault();
