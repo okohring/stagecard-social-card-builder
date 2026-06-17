@@ -49,10 +49,11 @@
     gap: 18px;
     width: 100%;
     margin: 0 auto;
-    padding: 12px 18px 16px;
-    border: 1px solid rgba(16, 24, 40, 0.10);
-    border-radius: 16px;
-    background: #f9fafb;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .dhkc-card-builder__control-grid {
@@ -118,12 +119,14 @@
     font-weight: 400 !important;
     line-height: 1;
     cursor: pointer;
+    transform: none !important;
     transition: opacity 160ms ease;
 }
 
 .dhkc-card-builder__upload:hover .dhkc-card-builder__file-button,
 .dhkc-card-builder__upload:focus-within .dhkc-card-builder__file-button {
     opacity: 0.92;
+    transform: none !important;
 }
 
 .dhkc-card-builder__adjust-row {
@@ -194,6 +197,13 @@
     cursor: pointer;
 }
 
+.dhkc-card-builder__zoom-button:hover,
+.dhkc-card-builder__zoom-button:focus,
+.dhkc-card-builder__move-button:hover,
+.dhkc-card-builder__move-button:focus {
+    transform: none !important;
+}
+
 .dhkc-card-builder__zoom-button:disabled,
 .dhkc-card-builder__move-button:disabled {
     cursor: not-allowed;
@@ -254,13 +264,14 @@
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
-    transition: transform 160ms ease, opacity 160ms ease;
+    transition: opacity 160ms ease;
 }
 
 .dhkc-card-builder__button:hover,
 .dhkc-card-builder__button:focus,
 .dhkc-card-builder__button:focus-visible {
-    transform: translateY(-1px);
+    opacity: 0.92;
+    transform: none !important;
     color: #000000 !important;
     text-decoration: none;
 }
@@ -268,7 +279,7 @@
 .dhkc-card-builder__button:disabled {
     cursor: not-allowed;
     opacity: 0.45;
-    transform: none;
+    transform: none !important;
     color: #000000 !important;
 }
 
@@ -303,7 +314,7 @@
 
     .dhkc-card-builder__controls {
         gap: 14px;
-        padding: 12px;
+        padding: 0;
     }
 
     .dhkc-card-builder__control-grid {
