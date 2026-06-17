@@ -13,6 +13,7 @@
             this.canvas = root.querySelector('.dhkc-card-builder__canvas');
             this.ctx = this.canvas.getContext('2d');
             this.fileInput = root.querySelector('.dhkc-card-builder__file');
+            this.fileName = root.querySelector('[data-dhkc-file-name]');
             this.zoomInput = root.querySelector('.dhkc-card-builder__zoom');
             this.resetButton = root.querySelector('[data-dhkc-reset]');
             this.downloadButton = root.querySelector('[data-dhkc-download]');
@@ -115,6 +116,9 @@
 
         handleFile(event) {
             const file = event.target.files && event.target.files[0];
+            if (this.fileName) {
+                this.fileName.textContent = file ? file.name : 'No file chosen';
+            }
             if (!file) {
                 return;
             }
