@@ -46,10 +46,10 @@
 .dhkc-card-builder__controls {
     order: 2;
     display: grid;
-    gap: 10px;
+    gap: 18px;
     width: 100%;
     margin: 0 auto;
-    padding: 12px 16px;
+    padding: 12px 18px 16px;
     border: 1px solid rgba(16, 24, 40, 0.10);
     border-radius: 16px;
     background: #f9fafb;
@@ -57,124 +57,27 @@
 
 .dhkc-card-builder__control-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 14px;
     align-items: center;
     width: 100%;
-    max-width: 650px;
+    max-width: 520px;
     margin: 0 auto;
 }
 
 .dhkc-card-builder__upload {
-    align-items: center;
-    text-align: left;
-}
-
-.dhkc-card-builder__upload,
-.dhkc-card-builder__range,
-.dhkc-card-builder__move {
-    display: grid;
-    gap: 5px;
-    margin: 0;
-    color: #000000 !important;
-    font-size: 0.95rem;
-    font-weight: 400 !important;
-}
-
-.dhkc-card-builder__adjust-title {
-    margin: 2px 0 0;
-    font-size: 0.95rem;
-    line-height: 1.2;
-    text-align: left;
-}
-
-.dhkc-card-builder__adjust-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    width: 100%;
-}
-
-.dhkc-card-builder__range {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dhkc-card-builder__range-label,
-.dhkc-card-builder__location-label {
-    font-size: 0.92rem;
-    line-height: 1;
-}
-
-.dhkc-card-builder__size-buttons {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.dhkc-card-builder__zoom {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    min-height: 0;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.dhkc-card-builder__zoom-button,
-.dhkc-card-builder__move-button {
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    min-height: 26px;
-    padding: 0;
-    border: 1px solid rgba(16, 24, 40, 0.16);
-    border-radius: 999px;
-    background: #ffffff;
-    color: #000000 !important;
-    font-size: 0.85rem;
-    font-weight: 400 !important;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.dhkc-card-builder__zoom-button:disabled,
-.dhkc-card-builder__move-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-}
-
-.dhkc-card-builder__move {
-    display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
+    margin: 0;
     text-align: center;
 }
-
-.dhkc-card-builder__move-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 26px);
-    grid-template-rows: repeat(3, 18px);
-    gap: 2px;
-    justify-content: center;
-    align-items: center;
-}
-
-.dhkc-card-builder__move-button--up { grid-column: 2; grid-row: 1; }
-.dhkc-card-builder__move-button--left { grid-column: 1; grid-row: 2; }
-.dhkc-card-builder__move-button--right { grid-column: 3; grid-row: 2; }
-.dhkc-card-builder__move-button--down { grid-column: 2; grid-row: 3; }
 
 .dhkc-card-builder__file-wrap {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
+    justify-content: center;
+    gap: 12px;
     flex-wrap: wrap;
     width: auto;
     margin: 0;
@@ -223,6 +126,107 @@
     transform: translateY(-1px);
 }
 
+.dhkc-card-builder__adjust-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+}
+
+.dhkc-card-builder__adjust-title {
+    justify-self: start;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700 !important;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.dhkc-card-builder__range {
+    display: inline-flex;
+    align-items: center;
+    justify-self: center;
+    gap: 8px;
+    margin: 0;
+    color: #000000 !important;
+    font-size: 0.95rem;
+    font-weight: 400 !important;
+}
+
+.dhkc-card-builder__range-label,
+.dhkc-card-builder__location-label {
+    font-size: 0.92rem;
+    line-height: 1;
+}
+
+.dhkc-card-builder__size-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dhkc-card-builder__zoom {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dhkc-card-builder__zoom-button,
+.dhkc-card-builder__move-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
+    padding: 0;
+    border: 1px solid rgba(16, 24, 40, 0.16);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #000000 !important;
+    font-size: 0.78rem;
+    font-weight: 400 !important;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.dhkc-card-builder__zoom-button:disabled,
+.dhkc-card-builder__move-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.dhkc-card-builder__move {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    justify-self: end;
+    gap: 8px;
+    margin: 0;
+    color: #000000 !important;
+    font-size: 0.95rem;
+    font-weight: 400 !important;
+    text-align: center;
+}
+
+.dhkc-card-builder__move-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 24px);
+    grid-template-rows: repeat(3, 16px);
+    gap: 1px;
+    justify-content: center;
+    align-items: center;
+}
+
+.dhkc-card-builder__move-button--up { grid-column: 2; grid-row: 1; }
+.dhkc-card-builder__move-button--left { grid-column: 1; grid-row: 2; }
+.dhkc-card-builder__move-button--right { grid-column: 3; grid-row: 2; }
+.dhkc-card-builder__move-button--down { grid-column: 2; grid-row: 3; }
+
 .dhkc-card-builder__actions {
     display: flex;
     flex-wrap: wrap;
@@ -230,7 +234,7 @@
     gap: 10px;
     width: 100%;
     max-width: 650px;
-    margin: 0 auto;
+    margin: -2px auto 0;
 }
 
 .dhkc-card-builder__button,
@@ -298,18 +302,25 @@
     }
 
     .dhkc-card-builder__controls {
-        gap: 10px;
+        gap: 14px;
         padding: 12px;
     }
 
-    .dhkc-card-builder__adjust-title,
-    .dhkc-card-builder__upload {
-        text-align: center;
+    .dhkc-card-builder__control-grid {
+        max-width: 100%;
     }
 
     .dhkc-card-builder__adjust-row {
-        justify-content: center;
-        flex-wrap: wrap;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 10px;
+    }
+
+    .dhkc-card-builder__adjust-title,
+    .dhkc-card-builder__range,
+    .dhkc-card-builder__move {
+        justify-self: center;
+        text-align: center;
     }
 
     .dhkc-card-builder__file-wrap {
